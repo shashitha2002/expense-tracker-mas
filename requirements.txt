@@ -1,0 +1,5 @@
+langgraph==0.2.38
+langchain-ollama==0.2.0
+ollama==0.3.3
+pydantic==2.9.2
+typing-extensions==4.12.2
