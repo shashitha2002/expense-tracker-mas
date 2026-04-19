@@ -1,25 +1,24 @@
 # agents/advisor.py
 from typing import Dict
-from langchain_ollama import OllamaLLM
-import json
+from tools.llm_advisor import LLMAdvisor, AdviceInput
+
 
 class AdvisorAgent:
     """
-    Agent 4: Generates spending advice based on budget status.
+    Agent 4: Writes investment/spending recommendations.
     Student 4's implementation.
     """
     
     def __init__(self):
         self.name = "AdvisorAgent"
-        # Use 3.2 3B for simple text generation
-        self.llm = OllamaLLM(model="llama3.2:3b", temperature=0.3)
+        self.advisor = LLMAdvisor(model_name="llama3.2:3b")  # Student 4's tool
     
     def run(self, state: Dict) -> Dict:
         """
-        Generate final advice message.
+        Generate final advice based on global state.
         
         Args:
-            state: All previous data including validation results
+            state: All previous agent outputs including budget status
             
         Returns:
             State with advice and final summary
@@ -27,37 +26,38 @@ class AdvisorAgent:
         amount = state.get("amount", 0)
         category = state.get("final_category", "unknown")
         validation = state.get("validation", {})
-        budget = state.get("budget_status", {})
+        budget_status = state.get("budget_status", {})
         
-        # Build simple prompt - easy for 3.2 3B
-        prompt = f"""You are a friendly budget advisor. Write a brief 2-sentence response.
-
-Facts:
-- User spent ${amount} on {category}
-- Budget remaining: ${validation.get('remaining', 0):.2f}
-- Over budget: {'Yes' if validation.get('warning') else 'No'}
-
-Response format:
-"Expense logged: $[amount] for [category]. [Advice about budget]."
-
-Keep it friendly and concise. No JSON, just text.
-"""
+        # Prepare input for LLM tool
+        advice_input: AdviceInput = {
+            "amount": amount,
+            "category": category,
+            "budget_remaining": validation.get("remaining", 0),
+            "over_budget": validation.get("warning", False),
+            "monthly_total": None,  # Could query from report_generator
+            "transaction_count": None
+        }
         
-        try:
-            advice = self.llm.invoke(prompt)
-        except Exception as e:
-            # Fallback if LLM fails
-            advice = f"Expense logged: ${amount} for {category}. " \
-                    f"Budget remaining: ${validation.get('remaining', 0):.2f}."
+        # Use LLMAdvisor tool
+        result = self.advisor.generate_advice(
+            data=advice_input,
+            use_llm=True  # Try LLM first, fallback on failure
+        )
         
-        new_state = state.copy()
-        new_state["advice"] = advice.strip()
-        new_state["final_summary"] = {
+        # Build final summary
+        summary = {
             "amount": amount,
             "category": category,
             "date": state.get("date"),
-            "budget_remaining": validation.get("remaining", 0),
-            "over_budget": validation.get("warning", False)
+            "budget_remaining": advice_input["budget_remaining"],
+            "over_budget": advice_input["over_budget"],
+            "advice_tone": result["tone"],
+            "confidence": result["confidence"]
         }
+        
+        new_state = state.copy()
+        new_state["advice"] = result["advice"]
+        new_state["final_summary"] = summary
+        new_state["suggested_action"] = result["suggested_action"]
         
         return new_state

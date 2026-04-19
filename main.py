@@ -37,6 +37,10 @@ class ExpenseState(TypedDict):
     advice: str
     final_summary: dict
     
+    # Report outputs (NEW)
+    monthly_report: dict
+    report_path: str
+    
     # Tracking
     errors: Annotated[list, operator.add]
 
@@ -104,6 +108,7 @@ def store_node(state: ExpenseState):
             "db_record": record,
             "errors": state.get("errors", []) + [f"Database: {str(e)}"]
         }
+
 def advisor_node(state: ExpenseState):
     """Node 4: Generate advice."""
     print(f"\n🤖 Advisor: Generating advice...")
@@ -141,6 +146,23 @@ def error_node(state: ExpenseState):
         }
     }
 
+def report_node(state: ExpenseState):
+    """Generate monthly report after advice."""
+    from tools.report_generator import ReportGenerator
+    
+    reporter = ReportGenerator()
+    report = reporter.generate_report()
+    
+    # Save to file
+    path = reporter.export_to_text(report)
+    
+    print(f"\n📊 Monthly report saved: {path}")
+    
+    return {
+        "monthly_report": report,
+        "report_path": path
+    }
+
 # Build graph
 workflow = StateGraph(ExpenseState)
 
@@ -150,6 +172,7 @@ workflow.add_node("validator", validator_node)
 workflow.add_node("categorizer", categorizer_node)
 workflow.add_node("store", store_node)
 workflow.add_node("advisor", advisor_node)
+workflow.add_node("report", report_node)
 workflow.add_node("error", error_node)
 
 # Entry point
@@ -169,7 +192,8 @@ workflow.add_conditional_edges(
 workflow.add_edge("validator", "categorizer")
 workflow.add_edge("categorizer", "store")
 workflow.add_edge("store", "advisor")
-workflow.add_edge("advisor", END)
+workflow.add_edge("advisor", "report")
+workflow.add_edge("report", END)
 
 # Error path ends immediately
 workflow.add_edge("error", END)
