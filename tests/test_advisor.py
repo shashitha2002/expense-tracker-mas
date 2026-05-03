@@ -1,9 +1,3 @@
-# tests/test_advisor.py
-"""
-Unit tests for Advisor Agent and llm_advisor tool.
-Student 4's testing contribution.
-Uses built-in unittest (no pytest required).
-"""
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

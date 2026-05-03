@@ -1,14 +1,8 @@
-# agents/advisor.py
 from typing import Dict
 from tools.llm_advisor import LLMAdvisor, AdviceInput
 
 
 class AdvisorAgent:
-    """
-    Agent 4: Writes investment/spending recommendations.
-    Student 4's implementation.
-    """
-    
     def __init__(self):
         self.name = "AdvisorAgent"
         self.advisor = LLMAdvisor(model_name="llama3.2:3b")  # Student 4's tool
@@ -34,14 +28,14 @@ class AdvisorAgent:
             "category": category,
             "budget_remaining": validation.get("remaining", 0),
             "over_budget": validation.get("warning", False),
-            "monthly_total": None,  # Could query from report_generator
+            "monthly_total": None,
             "transaction_count": None
         }
         
         # Use LLMAdvisor tool
         result = self.advisor.generate_advice(
             data=advice_input,
-            use_llm=True  # Try LLM first, fallback on failure
+            use_llm=True
         )
         
         # Build final summary

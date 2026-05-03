@@ -1,9 +1,3 @@
-# tools/report_generator.py
-"""
-Expense report generation and analytics tool.
-Student 4's custom tool with strict type hinting and docstrings.
-"""
-
 import sqlite3
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, TypedDict
@@ -30,10 +24,9 @@ class ReportData(TypedDict):
 
 class ReportGenerator:
     """
-    Generates spending reports and analytics from expense database.
     
-    Provides text summaries, category breakdowns, and trend insights
-    for the Advisor Agent to use in recommendations.
+    Generates spending reports and analytics from expense database.
+
     """
     
     def __init__(self, db_path: str = "data/expenses.db") -> None:
@@ -47,7 +40,7 @@ class ReportGenerator:
     
     def _query(self, sql: str, params: tuple = ()) -> List[sqlite3.Row]:
         """
-        Execute SELECT query safely.
+        Execute SELECT query.
         
         Args:
             sql: SQL query string.
@@ -126,7 +119,7 @@ class ReportGenerator:
     
     def generate_insights(self, summary: MonthlySummary) -> List[str]:
         """
-        Generate human-readable insights from summary data.
+        Generate insights from summary data.
         
         Args:
             summary: MonthlySummary from get_monthly_summary().
@@ -163,7 +156,7 @@ class ReportGenerator:
                 if limit > 0 and spent > limit:
                     over = spent - limit
                     insights.append(
-                        f"🚨 You've exceeded your {cat} budget by ${over:.2f}."
+                        f"You've exceeded your {cat} budget by ${over:.2f}."
                     )
                 elif limit > 0 and spent > limit * 0.8:
                     insights.append(
@@ -175,8 +168,6 @@ class ReportGenerator:
     def generate_report(self, period: Optional[str] = None) -> ReportData:
         """
         Generate complete spending report.
-        
-        This is the primary tool function used by the Advisor Agent.
         
         Args:
             period: YYYY-MM format, defaults to current month.

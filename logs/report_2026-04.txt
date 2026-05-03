@@ -1,0 +1,21 @@
+==================================================
+Expense Report - 2026-04
+Generated: 2026-04-19T13:05:52.756166
+==================================================
+
+Total Spent: $2530.00
+Transactions: 10
+Average: $253.00
+Top Category: entertainment
+
+Category Breakdown:
+  - entertainment: $1820.00
+  - food: $60.00
+  - other: $650.00
+
+Insights:
+  • You've made 10 transactions totaling $2530.00.
+  • Your highest spending category is entertainment at $1820.00.
+  • You've exceeded your entertainment budget by $1670.00.
+
+==================================================

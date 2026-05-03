@@ -1,9 +1,3 @@
-# tools/llm_advisor.py
-"""
-LLM-powered financial advice generation tool.
-Student 4's custom tool with strict type hinting and docstrings.
-"""
-
 from typing import Dict, Optional, TypedDict, List
 from langchain_ollama import OllamaLLM
 
@@ -30,8 +24,6 @@ class LLMAdvisor:
     """
     Generates personalized financial advice using local LLM.
     
-    Wraps Ollama LLM calls with structured prompting and
-    fallback mechanisms for reliable advice generation.
     """
     
     def __init__(self, model_name: str = "llama3.2:3b",
@@ -49,7 +41,6 @@ class LLMAdvisor:
         self._init_llm()
     
     def _init_llm(self) -> None:
-        """Lazy initialization of LLM connection."""
         try:
             self._llm = OllamaLLM(
                 model=self.model_name,
@@ -61,7 +52,7 @@ class LLMAdvisor:
     
     def _build_prompt(self, data: AdviceInput) -> str:
         """
-        Construct optimized prompt for 3.2 3B model.
+        Construct prompt for 3.2 3B model.
         
         Args:
             data: Advice input parameters.
@@ -139,8 +130,6 @@ Response:"""
         """
         Generate personalized financial advice.
         
-        This is the primary tool function used by the Advisor Agent.
-        
         Args:
             data: Expense and budget information.
             use_llm: Whether to use LLM or fallback logic.
@@ -183,8 +172,8 @@ Response:"""
             return {
                 "advice": advice,
                 "tone": tone,
-                "confidence": 0.8,  # LLM output has some uncertainty
-                "suggested_action": None  # Could parse from response
+                "confidence": 0.8,
+                "suggested_action": None
             }
             
         except Exception as e:
@@ -206,7 +195,6 @@ Response:"""
         top_cat = monthly_data.get("top_category", "none")
         count = monthly_data.get("transaction_count", 0)
         
-        # Always use deterministic for complex summaries (3.2 3B struggles)
         lines = [
             f"This month you've spent ${total:.2f} across {count} transactions.",
             f"Your highest spending category is {top_cat}."
@@ -217,7 +205,7 @@ Response:"""
             over = monthly_data["over_budget_categories"]
             if over:
                 lines.append(
-                    f"⚠️ Over budget in: {', '.join(over)}. "
+                    f"Over budget in: {', '.join(over)}. "
                     f"Consider cutting back next month."
                 )
         

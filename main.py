@@ -204,7 +204,7 @@ app = workflow.compile(checkpointer=checkpointer)
 
 def main():
     print("=" * 50)
-    print("💵 PERSONAL EXPENSE TRACKER (Multi-Agent System)")
+    print("PERSONAL EXPENSE TRACKER (Multi-Agent System)")
     print("=" * 50)
     print("Using: LangGraph + Llama 3.2 3B (local)")
     print("Agents: Parser → Validator → Categorizer → Advisor")
