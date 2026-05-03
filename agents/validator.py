@@ -1,4 +1,3 @@
-# agents/validator.py
 from typing import Dict
 from tools.budget import BudgetManager
 
@@ -20,7 +19,6 @@ class ValidatorAgent:
                 "budget_status": {}
             }
         
-        # Use the BudgetManager tool
         validation = self.budget.validate_expense(category, amount)
         budget_status = self.budget.get_budget(category) or {}
         
